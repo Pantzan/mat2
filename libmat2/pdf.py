@@ -37,7 +37,7 @@ class PDFParser(abstract.AbstractParser):
         except GLib.GError:  # Invalid PDF
             raise ValueError
 
-    def remove_all_lightweight(self):
+    def __remove_all_ligthweight(self) -> bool:
         """
             Load the document into Poppler, render pages on a new PDFSurface.
         """
@@ -65,6 +65,11 @@ class PDFParser(abstract.AbstractParser):
         return True
 
     def remove_all(self):
+        if self.lightweight_cleaning is True:
+            return self.__remove_all_ligthweight()
+        return self.__remove_all_complete()
+
+    def __remove_all_complete(self) -> bool:
         """
             Load the document into Poppler, render pages on PNG,
             and shove those PNG into a new PDF.

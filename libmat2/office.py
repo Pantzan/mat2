@@ -267,8 +267,9 @@ class MSOfficeParser(ArchiveBasedAbstractParser):
                 f.write(b'</cp:coreProperties>')
 
 
-        if self.__remove_rsid(full_path) is False:
-            return False
+        if self.lightweight_cleaning is False:
+            if self.__remove_rsid(full_path) is False:
+                return False
 
         try:
             _sort_xml_attributes(full_path)

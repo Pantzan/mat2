@@ -182,6 +182,25 @@ class TestRevisionsCleaning(unittest.TestCase):
         os.remove('./tests/data/revision_clean.cleaned.docx')
 
 class TestLightWeightCleaning(unittest.TestCase):
+    def test_msoffice(self):
+        shutil.copy('./tests/data/dirty.docx', './tests/data/clean.docx')
+        p = office.MSOfficeParser('./tests/data/clean.docx')
+
+        meta = p.get_meta()
+        self.assertEqual(meta['cp:lastModifiedBy'], 'Julien Voisin')
+
+        p.lightweight_cleaning = True
+        ret = p.remove_all()
+        self.assertTrue(ret)
+
+        # FIXME blocked by https://0xacab.org/jvoisin/mat2/issues/73 
+        #p = office.MSOfficeParser('./tests/data/clean.cleaned.docx')
+        #expected_meta = {'creation-date': -1, 'format': 'docx-1.5', 'mod-date': -1}
+        #self.assertEqual(p.get_meta(), expected_meta)
+
+        os.remove('./tests/data/clean.docx')
+        os.remove('./tests/data/clean.cleaned.docx')
+
     def test_pdf(self):
         shutil.copy('./tests/data/dirty.pdf', './tests/data/clean.pdf')
         p = pdf.PDFParser('./tests/data/clean.pdf')
@@ -189,7 +208,8 @@ class TestLightWeightCleaning(unittest.TestCase):
         meta = p.get_meta()
         self.assertEqual(meta['producer'], 'pdfTeX-1.40.14')
 
-        ret = p.remove_all_lightweight()
+        p.lightweight_cleaning = True
+        ret = p.remove_all()
         self.assertTrue(ret)
 
         p = pdf.PDFParser('./tests/data/clean.cleaned.pdf')
@@ -206,7 +226,8 @@ class TestLightWeightCleaning(unittest.TestCase):
         meta = p.get_meta()
         self.assertEqual(meta['Comment'], 'This is a comment, be careful!')
 
-        ret = p.remove_all_lightweight()
+        p.lightweight_cleaning = True
+        ret = p.remove_all()
         self.assertTrue(ret)
 
         p = images.PNGParser('./tests/data/clean.cleaned.png')
