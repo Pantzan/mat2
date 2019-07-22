@@ -13,6 +13,7 @@ class AbstractParser(abc.ABC):
     """
     meta_list = set()  # type: Set[str]
     mimetypes = set()  # type: Set[str]
+    suffix = '.original'
 
     def __init__(self, filename: str) -> None:
         """
@@ -24,23 +25,20 @@ class AbstractParser(abc.ABC):
             filename = os.path.join('.', filename)
 
         self.filename = filename
-        fname, extension = os.path.splitext(filename)
+        self.output_filename = filename
 
-        # Special case for tar.gz, tar.bz2, … files
-        if fname.endswith('.tar') and len(fname) > 4:
-            fname, extension = fname[:-4], '.tar' + extension
-
-        self.output_filename = fname + '.cleaned' + extension
         self.lightweight_cleaning = False
 
     @abc.abstractmethod
     def get_meta(self) -> Dict[str, Union[str, dict]]:
         """Return all the metadata of the current file"""
 
-    @abc.abstractmethod
     def remove_all(self) -> bool:
         """
         Remove all the metadata of the current file
 
         :raises RuntimeError: Raised if the cleaning process went wrong.
         """
+        self.output_filename = self.filename
+        self.filename = self.filename + self.suffix
+        os.rename(filename, filename + self.suffix)
