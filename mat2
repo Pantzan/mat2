@@ -68,10 +68,10 @@ def create_arg_parser() -> argparse.ArgumentParser:
 
     excl_group = parser.add_mutually_exclusive_group()
     excl_group.add_argument('-L', '--lightweight', action='store_true',
-                      help='remove SOME metadata')
+                            help='remove SOME metadata')
     excl_group.add_argument('-s', '--show', action='store_true',
-                      help='list harmful metadata detectable by MAT2 without '
-                      'removing them')
+                            help='list harmful metadata detectable by MAT2 '
+                            'without removing them')
 
     return parser
 
