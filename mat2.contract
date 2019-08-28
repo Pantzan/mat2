@@ -1,0 +1,5 @@
+[Contractor Entry]
+Name=mat2
+MimeType=application/epub+zip,application/pdf,application/vnd.oasis.opendocument.chart,application/vnd.oasis.opendocument.formula,application/vnd.oasis.opendocument.graphics,application/vnd.oasis.opendocument.image,application/vnd.oasis.opendocument.presentation,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/x-bittorrent,application/x-dtbncx+xml,application/x-tar,application/xhtml+xml,application/zip,audio/flac,audio/mpeg,audio/ogg,image/gif,image/jpeg,image/png,image/svg+xml,image/tiff,image/x-ms-bmp,text/css,text/html,text/plain,video/mp4,video/x-ms-wmv,video/x-msvideo
+Description=Remove metadata from files
+Exec=mat2 %f
