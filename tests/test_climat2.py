@@ -254,3 +254,21 @@ class TestInplaceCleaning(unittest.TestCase):
         self.assertIn(b'  No metadata found in ./tests/data/clean.jpg.\n', stdout)
         os.remove('./tests/data/clean.jpg')
 
+    def test_cleaning_multiple_one_fails(self):
+        files = ['./tests/data/clean_%d.jpg' % i for i in range(9)]
+        for f in files:
+            shutil.copy('./tests/data/dirty.jpg', f)
+        shutil.copy('./tests/data/dirty.torrent', './tests/data/clean_9.jpg')
+
+        proc = subprocess.Popen(mat2_binary + ['--inplace'] + files,
+                stdout=subprocess.PIPE)
+        stdout, _ = proc.communicate()
+
+        for f in files:
+            p = images.JPGParser(f)
+            meta = p.get_meta()
+            self.assertEqual(meta, {})
+
+        for i in range(10):
+            os.remove('./tests/data/clean_%d.jpg' % i)
+
