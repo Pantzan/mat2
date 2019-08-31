@@ -20,7 +20,7 @@ class TestHelp(unittest.TestCase):
     def test_help(self):
         proc = subprocess.Popen(mat2_binary + ['--help'], stdout=subprocess.PIPE)
         stdout, _ = proc.communicate()
-        self.assertIn(b'mat2 [-h] [-V] [--unknown-members policy] [-v] [-l]',
+        self.assertIn(b'mat2 [-h] [-V] [--unknown-members policy] [--inplace] [-v] [-l]',
                       stdout)
         self.assertIn(b'[--check-dependencies] [-L | -s]', stdout)
         self.assertIn(b'[files [files ...]]', stdout)
@@ -28,7 +28,7 @@ class TestHelp(unittest.TestCase):
     def test_no_arg(self):
         proc = subprocess.Popen(mat2_binary, stdout=subprocess.PIPE)
         stdout, _ = proc.communicate()
-        self.assertIn(b'mat2 [-h] [-V] [--unknown-members policy] [-v] [-l]',
+        self.assertIn(b'mat2 [-h] [-V] [--unknown-members policy] [--inplace] [-v] [-l]',
                       stdout)
         self.assertIn(b'[--check-dependencies] [-L | -s]', stdout)
         self.assertIn(b'[files [files ...]]', stdout)
@@ -241,3 +241,16 @@ class TestCommandLineParallel(unittest.TestCase):
             os.remove('./tests/data/dirty_%d.cleaned.jpg' % i)
             os.remove(path)
             os.remove('./tests/data/dirty_%d.docx' % i)
+
+class TestInplaceCleaning(unittest.TestCase):
+    def test_cleaning(self):
+        shutil.copy('./tests/data/dirty.jpg', './tests/data/clean.jpg')
+        proc = subprocess.Popen(mat2_binary + ['--inplace', './tests/data/clean.jpg'],
+                stdout=subprocess.PIPE)
+        stdout, _ = proc.communicate()
+        proc = subprocess.Popen(mat2_binary + ['--show', './tests/data/clean.jpg'],
+                stdout=subprocess.PIPE)
+        stdout, _ = proc.communicate()
+        self.assertIn(b'  No metadata found in ./tests/data/clean.jpg.\n', stdout)
+        os.remove('./tests/data/clean.jpg')
+
