@@ -28,10 +28,11 @@ class ExiftoolParser(abstract.AbstractParser):
         return meta
 
     def _lightweight_cleanup(self) -> bool:
-        if os.path.exists(self.output_filename):
+        # TODO(jvoisin)
+        if os.path.exists(self.backup):
             try:
                 # exiftool can't force output to existing files
-                os.remove(self.output_filename)
+                os.remove(self.backup)
             except OSError as e:  # pragma: no cover
                 logging.error("The output file %s is already existing and \
                                can't be overwritten: %s.", self.filename, e)
@@ -46,12 +47,12 @@ class ExiftoolParser(abstract.AbstractParser):
                '-Time:All=',    # remove all timestamps
                '-quiet',        # don't show useless logs
                '-CommonIFD0=',  # remove IFD0 metadata
-               '-o', self.output_filename,
+               '-o', self.backup,
                self.filename]
         try:
             subprocess.run(cmd, check=True,
                            input_filename=self.filename,
-                           output_filename=self.output_filename)
+                           output_filename=self.backup)
         except subprocess.CalledProcessError as e:  # pragma: no cover
             logging.error("Something went wrong during the processing of %s: %s", self.filename, e)
             return False

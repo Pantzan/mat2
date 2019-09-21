@@ -13,7 +13,7 @@ class AbstractFFmpegParser(exiftool.ExiftoolParser):
     # Some fileformats have mandatory metadata fields
     meta_key_value_allowlist = {}  # type: Dict[str, Union[str, int]]
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         if self.meta_key_value_allowlist:
             logging.warning('The format of "%s" (%s) has some mandatory '
                             'metadata fields; mat2 filled them with standard '
@@ -31,14 +31,17 @@ class AbstractFFmpegParser(exiftool.ExiftoolParser):
                '-fflags', '+bitexact',   # don't add any metadata
                '-flags:v', '+bitexact',  # don't add any metadata
                '-flags:a', '+bitexact',  # don't add any metadata
-               self.output_filename]
+               self.backup]
         try:
             subprocess.run(cmd, check=True,
                            input_filename=self.filename,
-                           output_filename=self.output_filename)
+                           output_filename=self.backup)
         except subprocess.CalledProcessError as e:
             logging.error("Something went wrong during the processing of %s: %s", self.filename, e)
             return False
+        if inplace:
+            os.remove(self.filename)
+            os.rename(self.backup, self.filename)
         return True
 
     def get_meta(self) -> Dict[str, Union[str, dict]]:

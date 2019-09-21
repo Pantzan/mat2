@@ -144,11 +144,11 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
         shutil.rmtree(temp_folder)
         return meta
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         # pylint: disable=too-many-branches
 
         with self.archive_class(self.filename) as zin,\
-             self.archive_class(self.output_filename, 'w' + self.compression) as zout:
+             self.archive_class(self.backup, 'w' + self.compression) as zout:
 
             temp_folder = tempfile.mkdtemp()
             abort = False
@@ -205,14 +205,14 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
                             abort = True
                             continue
                     else:
-                        if member_parser.remove_all() is False:
+                        if member_parser.remove_all(inplace=False) is False:
                             logging.warning("In file %s, something went wrong \
                                              with the cleaning of %s \
                                              (format: %s)",
                                             self.filename, member_name, mtype)
                             abort = True
                             continue
-                        os.rename(member_parser.output_filename, full_path)
+                        os.rename(member_parser.backup, full_path)
 
                 zinfo = self.member_class(member_name)  # type: ignore
                 zinfo = self._set_member_permissions(zinfo, original_permissions)
@@ -221,8 +221,11 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
 
         shutil.rmtree(temp_folder)
         if abort:
-            os.remove(self.output_filename)
+            os.remove(self.backup)
             return False
+        if inplace is True:
+            os.remove(self.filename)
+            os.rename(self.backup, self.filename)
         return True
 
 

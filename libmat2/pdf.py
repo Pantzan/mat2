@@ -38,10 +38,14 @@ class PDFParser(abstract.AbstractParser):
         except GLib.GError:  # Invalid PDF
             raise ValueError
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         if self.lightweight_cleaning is True:
             return self.__remove_all_lightweight()
-        return self.__remove_all_thorough()
+        if self.__remove_all_thorough():
+            if inplace:
+                os.remove(self.filename)
+                os.rename(self.backup, self.filename)
+
 
     def __remove_all_lightweight(self) -> bool:
         """
@@ -65,7 +69,7 @@ class PDFParser(abstract.AbstractParser):
             pdf_context.show_page()  # draw pdf_context on pdf_surface
         pdf_surface.finish()
 
-        self.__remove_superficial_meta(tmp_path, self.output_filename)
+        self.__remove_superficial_meta(tmp_path, self.backup)
         os.remove(tmp_path)
 
         return True
@@ -110,7 +114,7 @@ class PDFParser(abstract.AbstractParser):
         pdf_surface.finish()
 
         # Removes metadata added by Poppler
-        self.__remove_superficial_meta(tmp_path, self.output_filename)
+        self.__remove_superficial_meta(tmp_path, self.backup)
         os.remove(tmp_path)
 
         return True

@@ -30,7 +30,7 @@ class AbstractParser(abc.ABC):
         if fname.endswith('.tar') and len(fname) > 4:
             fname, extension = fname[:-4], '.tar' + extension
 
-        self.output_filename = fname + '.cleaned' + extension
+        self.backup = fname + '.original.' + extension
         self.lightweight_cleaning = False
 
     @abc.abstractmethod
@@ -38,7 +38,7 @@ class AbstractParser(abc.ABC):
         """Return all the metadata of the current file"""
 
     @abc.abstractmethod
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         """
         Remove all the metadata of the current file
 

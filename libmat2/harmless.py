@@ -10,6 +10,7 @@ class HarmlessParser(abstract.AbstractParser):
     def get_meta(self) -> Dict[str, Union[str, dict]]:
         return dict()
 
-    def remove_all(self) -> bool:
-        shutil.copy(self.filename, self.output_filename)
+    def remove_all(self, inplace:bool = False) -> bool:
+        if not inplace:
+            shutil.copy(self.filename, self.backup)
         return True

@@ -22,12 +22,13 @@ class TorrentParser(abstract.AbstractParser):
                 metadata[key.decode('utf-8')] = value
         return metadata
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         cleaned = dict()
         for key, value in self.dict_repr.items():
             if key in self.allowlist:
                 cleaned[key] = value
-        with open(self.output_filename, 'wb') as f:
+        out_file = self.filename if inplace else self.backup
+        with open(out_file, 'wb') as f:
             f.write(_BencodeHandler().bencode(cleaned))
         self.dict_repr = cleaned  # since we're stateful
         return True

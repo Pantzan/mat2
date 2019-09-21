@@ -2,6 +2,7 @@ from html import parser, escape
 from typing import Dict, Any, List, Tuple, Set, Optional
 import re
 import string
+import shutil
 
 from . import abstract
 
@@ -15,10 +16,12 @@ class CSSParser(abstract.AbstractParser):
     mimetypes = {'text/css', }
     flags = re.MULTILINE | re.DOTALL
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
+        if not inplace:
+            shutil.copy(self.filename, self.backup)
         with open(self.filename, encoding='utf-8') as f:
             cleaned = re.sub(r'/\*.*?\*/', '', f.read(), 0, self.flags)
-        with open(self.output_filename, 'w', encoding='utf-8') as f:
+        with open(self.filename, 'w', encoding='utf-8') as f:
             f.write(cleaned)
         return True
 
@@ -53,8 +56,9 @@ class AbstractHTMLParser(abstract.AbstractParser):
     def get_meta(self) -> Dict[str, Any]:
         return self.__parser.get_meta()
 
-    def remove_all(self) -> bool:
-        return self.__parser.remove_all(self.output_filename)
+    def remove_all(self, inplace:bool = False) -> bool:
+        out_file = self.filename if inplace else self.backup
+        return self.__parser.remove_all(out_file)
 
 
 class HTMLParser(AbstractHTMLParser):

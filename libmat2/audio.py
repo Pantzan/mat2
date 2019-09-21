@@ -23,9 +23,11 @@ class MutagenParser(abstract.AbstractParser):
             return {k:', '.join(v) for k, v in f.tags.items()}
         return {}
 
-    def remove_all(self) -> bool:
-        shutil.copy(self.filename, self.output_filename)
-        f = mutagen.File(self.output_filename)
+    def remove_all(self, inplace:bool = False) -> bool:
+        output = self.filename if inplace else self.backup
+        if inplace:
+            shutil.copy(self.filename, self.backup)
+        f = mutagen.File(output)
         f.delete()
         f.save()
         return True
@@ -51,9 +53,11 @@ class OGGParser(MutagenParser):
 class FLACParser(MutagenParser):
     mimetypes = {'audio/flac', 'audio/x-flac'}
 
-    def remove_all(self) -> bool:
-        shutil.copy(self.filename, self.output_filename)
-        f = mutagen.File(self.output_filename)
+    def remove_all(self, inplace:bool = False) -> bool:
+        output = self.filename if inplace else self.backup
+        if inplace:
+            shutil.copy(self.filename, self.backup)
+        f = mutagen.File(output)
         f.clear_pictures()
         f.delete()
         f.save(deleteid3=True)

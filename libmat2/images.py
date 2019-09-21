@@ -25,10 +25,11 @@ class SVGParser(exiftool.ExiftoolParser):
                       'MIMEType', 'SVGVersion', 'SourceFile', 'ViewBox'
                       }
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
+        output = self.filename if inplace else self.backup
         svg = Rsvg.Handle.new_from_file(self.filename)
         dimensions = svg.get_dimensions()
-        surface = cairo.SVGSurface(self.output_filename,
+        surface = cairo.SVGSurface(output,
                                    dimensions.height,
                                    dimensions.width)
         context = cairo.Context(surface)
@@ -66,11 +67,12 @@ class PNGParser(exiftool.ExiftoolParser):
         except MemoryError:  # pragma: no cover
             raise ValueError
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
+        output = self.filename if inplace else self.backup
         if self.lightweight_cleaning:
             return self._lightweight_cleanup()
         surface = cairo.ImageSurface.create_from_png(self.filename)
-        surface.write_to_png(self.output_filename)
+        surface.write_to_png(output)
         return True
 
 
@@ -85,7 +87,7 @@ class GIFParser(exiftool.ExiftoolParser):
                       'HasColorMap', 'ImageHeight', 'ImageSize', 'ImageWidth',
                       'MIMEType', 'Megapixels', 'SourceFile',}
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         return self._lightweight_cleanup()
 
 
@@ -103,15 +105,16 @@ class GdkPixbufAbstractParser(exiftool.ExiftoolParser):
         except GLib.GError:
             raise ValueError
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         if self.lightweight_cleaning:
             return self._lightweight_cleanup()
 
+        output = self.filename if inplace else self.backup
         _, extension = os.path.splitext(self.filename)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
         if extension.lower() == '.jpg':
             extension = '.jpeg'  # gdk is picky
-        pixbuf.savev(self.output_filename, type=extension[1:], option_keys=[], option_values=[])
+        pixbuf.savev(output, type=extension[1:], option_keys=[], option_values=[])
         return True
 
 
@@ -152,11 +155,15 @@ class PPMParser(abstract.AbstractParser):
                     meta[str(idx)] = line.lstrip().rstrip()
         return meta
 
-    def remove_all(self) -> bool:
+    def remove_all(self, inplace:bool = False) -> bool:
         with open(self.filename) as fin:
-            with open(self.output_filename, 'w') as fout:
+            with open(self.backup, 'w') as fout:
                 for line in fin:
                     if not line.lstrip().startswith('#'):
                         line = re.sub(r"\s+", "", line, flags=re.UNICODE)
                         fout.write(line)
+        if inplace:
+            os.remove(self.filename)
+            os.rename(self.backup, self.filename)
+
         return True

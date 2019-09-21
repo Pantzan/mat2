@@ -131,10 +131,7 @@ def clean_meta(filename: str, is_lightweight: bool, inplace: bool,
 
     try:
         logging.debug('Cleaning %s…', filename)
-        ret = p.remove_all()
-        if inplace is True:
-            os.rename(p.output_filename, filename)
-        return ret
+        return p.remove_all(inplace)
     except RuntimeError as e:
         print("[-] %s can't be cleaned: %s" % (filename, e))
     return False
