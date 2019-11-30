@@ -264,7 +264,7 @@ class TestCommandLineParallel(unittest.TestCase):
         if sys.versioninfo >= (3, 8):
             with os.scandir(src) as itr:
                     entries = list(itr)
-            _copytree(entries=entries, src=src, dst=dst)
+            shutil._copytree(entries=entries, src=src, dst=dst)
         else:
             shutil.copytree(src, dst)
 
