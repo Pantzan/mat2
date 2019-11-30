@@ -261,7 +261,7 @@ class TestCommandLineParallel(unittest.TestCase):
     def test_different(self):
         src = './tests/data/'
         dst = './tests/data/parallel'
-        if sys.versioninfo >= (3, 8):
+        if sys.version_info >= (3, 8):
             with os.scandir(src) as itr:
                     entries = list(itr)
             shutil._copytree(entries=entries, src=src, dst=dst)
