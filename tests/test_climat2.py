@@ -265,7 +265,7 @@ class TestCommandLineParallel(unittest.TestCase):
             with os.scandir(src) as itr:
                     entries = list(itr)
             shutil._copytree(entries=entries, src=src, dst=dst, symlinks=False,
-                    ignore=None, copy_function=copy2,
+                    ignore=None, copy_function=shutil.copy2,
                     ignore_dangling_symlinks=False)
         else:
             shutil.copytree(src, dst)
