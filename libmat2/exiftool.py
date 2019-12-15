@@ -23,12 +23,12 @@ class ExiftoolParser(abstract.AbstractParser):
         try:
             if self.sandbox:
                 out = bubblewrap.run([_get_exiftool_path(), '-json',
-                                     self.filename],
+                                      self.filename],
                                      input_filename=self.filename,
                                      check=True, stdout=subprocess.PIPE).stdout
             else:
                 out = subprocess.run([_get_exiftool_path(), '-json',
-                                     self.filename], check=True,
+                                      self.filename], check=True,
                                      stdout=subprocess.PIPE).stdout
         except subprocess.CalledProcessError:
             raise ValueError
