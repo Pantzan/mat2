@@ -63,7 +63,7 @@ class PNGParser(exiftool.ExiftoolParser):
 
         try:  # better fail here than later
             cairo.ImageSurface.create_from_png(self.filename)
-        except MemoryError:  # pragma: no cover
+        except (MemoryError, cairo.IOError):  # pragma: no cover
             raise ValueError
 
     def remove_all(self) -> bool:
