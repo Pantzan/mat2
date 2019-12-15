@@ -111,7 +111,11 @@ class GdkPixbufAbstractParser(exiftool.ExiftoolParser):
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
         if extension.lower() == '.jpg':
             extension = '.jpeg'  # gdk is picky
-        pixbuf.savev(self.output_filename, type=extension[1:], option_keys=[], option_values=[])
+        try:
+            pixbuf.savev(self.output_filename, type=extension[1:],
+                option_keys=[], option_values=[])
+        except GLib.GError:
+            return False
         return True
 
 
