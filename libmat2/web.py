@@ -19,7 +19,7 @@ class CSSParser(abstract.AbstractParser):
         with open(self.filename, encoding='utf-8') as f:
             try:
                 content = f.read()
-            except UnicodeDecodeError:
+            except UnicodeDecodeError:  # pragma: no cover
                 raise ValueError
             cleaned = re.sub(r'/\*.*?\*/', '', content, 0, self.flags)
         with open(self.output_filename, 'w', encoding='utf-8') as f:
@@ -31,7 +31,7 @@ class CSSParser(abstract.AbstractParser):
         with open(self.filename, encoding='utf-8') as f:
             try:
                 content = f.read()
-            except UnicodeDecodeError:
+            except UnicodeDecodeError:  # pragma: no cover
                 raise ValueError
         cssdoc = re.findall(r'/\*(.*?)\*/', content, self.flags)
         for match in cssdoc:
