@@ -96,14 +96,14 @@ class _HTMLParser(parser.HTMLParser):
         self.tag_required_blocklist = required_blocklisted_tags
         self.tag_blocklist = blocklisted_tags
 
-    def error(self, msg):
+    def error(self, message):
         """ Amusingly, Python's documentation doesn't mention that this
         function needs to be implemented in subclasses of the parent class
         of parser.HTMLParser. This was found by fuzzing,
         triggering the following exception:
             NotImplementedError: subclasses of ParserBase must override error()
         """
-        raise ValueError(msg)
+        raise ValueError(message)
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
         # Ignore the type, because mypy is too stupid to infer
