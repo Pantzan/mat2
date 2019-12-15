@@ -114,7 +114,7 @@ class GdkPixbufAbstractParser(exiftool.ExiftoolParser):
         try:
             pixbuf.savev(self.output_filename, type=extension[1:],
                          option_keys=[], option_values=[])
-        except GLib.GError:
+        except GLib.GError:  # pragma: no cover
             return False
         return True
 
