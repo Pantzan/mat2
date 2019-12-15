@@ -123,6 +123,9 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
                 local_meta = self._get_member_meta(item)
                 member_name = self._get_member_name(item)
 
+                if not member_name:  # pragma: no cover
+                    continue  # don't keep nameless files
+
                 if member_name[-1] == '/':  # pragma: no cover
                     # `is_dir` is added in Python3.6
                     continue  # don't keep empty folders
@@ -168,6 +171,8 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
             # we're iterating (and thus inserting) them in lexicographic order.
             for item in items:
                 member_name = self._get_member_name(item)
+                if not member_name:  # pragma: no cover
+                    continue  # don't keep nameless files
                 if member_name[-1] == '/':  # `is_dir` is added in Python3.6
                     continue  # don't keep empty folders
 
