@@ -113,7 +113,7 @@ class GdkPixbufAbstractParser(exiftool.ExiftoolParser):
             extension = '.jpeg'  # gdk is picky
         try:
             pixbuf.savev(self.output_filename, type=extension[1:],
-                option_keys=[], option_values=[])
+                         option_keys=[], option_values=[])
         except GLib.GError:
             return False
         return True
