@@ -82,7 +82,9 @@ class FLACParser(MutagenParser):
 class WAVParser(video.AbstractFFmpegParser):
     mimetypes = {'audio/x-wav', }
     meta_allowlist = {'AvgBytesPerSec', 'BitsPerSample', 'Directory',
-            'Duration', 'Encoding', 'ExifToolVersion', 'FileAccessDate',
-            'FileInodeChangeDate', 'FileModifyDate', 'FileName',
-            'FilePermissions', 'FileSize', 'FileType', 'FileTypeExtension',
-            'MIMEType', 'NumChannels', 'SampleRate', 'SourceFile', }
+                      'Duration', 'Encoding', 'ExifToolVersion',
+                      'FileAccessDate', 'FileInodeChangeDate',
+                      'FileModifyDate', 'FileName', 'FilePermissions',
+                      'FileSize', 'FileType', 'FileTypeExtension',
+                      'MIMEType', 'NumChannels', 'SampleRate', 'SourceFile',
+                     }
