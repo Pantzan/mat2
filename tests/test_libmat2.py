@@ -500,7 +500,7 @@ class TestCleaning(unittest.TestCase):
             self.assertTrue(p1.remove_all())
 
             p2 = case['parser'](p1.output_filename)
-            for k, v in get_meta():
+            for k, v in p2.get_meta():
                 self.assertIn(k, case['expected_meta'])
                 self.assertEqual(v, case['expected_meta'][k])
             self.assertTrue(p2.remove_all())
