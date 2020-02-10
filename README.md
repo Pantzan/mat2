@@ -41,6 +41,18 @@ Nautilus, the default file manager of GNOME.
 
 Please note that mat2 requires at least Python3.5.
 
+# Requirements setup on macOS (OS X) using Homewbrew
+
+```bash
+brew install exiftool
+brew install cairo
+brew install pygobject3
+brew install poppler
+brew install gdk-pixbuf
+brew install librsvg
+brew install ffmpeg
+```
+
 # Running the test suite
 
 ```bash

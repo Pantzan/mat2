@@ -2,6 +2,7 @@ import functools
 import json
 import logging
 import os
+import shutil
 import subprocess
 from typing import Dict, Union, Set
 
@@ -71,6 +72,10 @@ class ExiftoolParser(abstract.AbstractParser):
 
 @functools.lru_cache()
 def _get_exiftool_path() -> str:  # pragma: no cover
+    which_path = shutil.which('exiftool')
+    if which_path is not None and os.access(which_path, os.X_OK):
+        return which_path
+
     possible_pathes = {
         '/usr/bin/exiftool',              # debian/fedora
         '/usr/bin/vendor_perl/exiftool',  # archlinux
