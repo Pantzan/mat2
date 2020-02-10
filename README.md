@@ -41,7 +41,7 @@ Nautilus, the default file manager of GNOME.
 
 Please note that mat2 requires at least Python3.5.
 
-# Requirements setup on macOS (OS X) using Homewbrew
+# Requirements setup on macOS (OS X) using [Homebrew](https://brew.sh/)
 
 ```bash
 brew install exiftool
