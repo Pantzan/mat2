@@ -139,12 +139,7 @@ class MP4Parser(AbstractFFmpegParser):
 @functools.lru_cache()
 def _get_ffmpeg_path() -> str:  # pragma: no cover
     which_path = shutil.which('ffmpeg')
-    if which_path is not None and os.access(which_path, os.X_OK):
+    if which_path is not None:
         return which_path
-
-    ffmpeg_path = '/usr/bin/ffmpeg'
-    if os.path.isfile(ffmpeg_path):
-        if os.access(ffmpeg_path, os.X_OK):
-            return ffmpeg_path
 
     raise RuntimeError("Unable to find ffmpeg")

@@ -23,13 +23,8 @@ CalledProcessError = subprocess.CalledProcessError
 
 def _get_bwrap_path() -> str:
     which_path = shutil.which('bwrap')
-    if which_path is not None and os.access(which_path, os.X_OK):
+    if which_path is not None:
         return which_path
-
-    bwrap_path = '/usr/bin/bwrap'
-    if os.path.isfile(bwrap_path):
-        if os.access(bwrap_path, os.X_OK):
-            return bwrap_path
 
     raise RuntimeError("Unable to find bwrap")  # pragma: no cover
 

@@ -73,17 +73,7 @@ class ExiftoolParser(abstract.AbstractParser):
 @functools.lru_cache()
 def _get_exiftool_path() -> str:  # pragma: no cover
     which_path = shutil.which('exiftool')
-    if which_path is not None and os.access(which_path, os.X_OK):
+    if which_path is not None:
         return which_path
-
-    possible_pathes = {
-        '/usr/bin/exiftool',              # debian/fedora
-        '/usr/bin/vendor_perl/exiftool',  # archlinux
-    }
-
-    for possible_path in possible_pathes:
-        if os.path.isfile(possible_path):
-            if os.access(possible_path, os.X_OK):
-                return possible_path
 
     raise RuntimeError("Unable to find exiftool")
