@@ -44,13 +44,7 @@ Please note that mat2 requires at least Python3.5.
 # Requirements setup on macOS (OS X) using [Homebrew](https://brew.sh/)
 
 ```bash
-brew install exiftool
-brew install cairo
-brew install pygobject3
-brew install poppler
-brew install gdk-pixbuf
-brew install librsvg
-brew install ffmpeg
+brew install exiftool cairo pygobject3 poppler gdk-pixbuf librsvg ffmpeg
 ```
 
 # Running the test suite
