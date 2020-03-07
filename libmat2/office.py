@@ -303,7 +303,7 @@ class MSOfficeParser(ZipParser):
                 f.write(b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
                 f.write(b'<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">')
                 f.write(b'</cp:coreProperties>')
-        elif full_path.endswith('/ppt/tableStyles.xml'):
+        elif full_path.endswith('/ppt/tableStyles.xml'):  # pragma: no cover
             # This file must be present and valid,
             # so we're removing as much as we can.
             with open(full_path, 'wb') as f:
