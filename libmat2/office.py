@@ -160,7 +160,7 @@ class MSOfficeParser(ZipParser):
         """
         try:
             tree, namespace = _parse_xml(full_path)
-        except ET.ParseError as e:
+        except ET.ParseError as e:  # pragma: no cover
             logging.error("Unable to parse %s: %s", full_path, e)
             return False
 
@@ -220,7 +220,7 @@ class MSOfficeParser(ZipParser):
     def __remove_revisions(full_path: str) -> bool:
         try:
             tree, namespace = _parse_xml(full_path)
-        except ET.ParseError as e:
+        except ET.ParseError as e:  # pragma: no cover
             logging.error("Unable to parse %s: %s", full_path, e)
             return False
 
@@ -299,7 +299,7 @@ class MSOfficeParser(ZipParser):
         """ MSOffice documents are using various counters for cross-references,
         we collect them all, to make sure that they're effectively counters,
         and not unique id used for fingerprinting."""
-        with open(full_path) as f:
+        with open(full_path, encoding='utf-8') as f:
             content = f.read()
             # relationship id
             for i in re.findall(r'(?:\s|r:)[iIdD]="rId([0-9]+)"(?:\s|/)', content):
