@@ -86,6 +86,7 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
         """ This method is invoked after the file has been cleaned,
         allowing to run final verifications.
         """
+        # pylint: disable=unused-argument,no-self-use
         return True
 
     @staticmethod

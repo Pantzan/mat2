@@ -78,9 +78,9 @@ class MSOfficeParser(ZipParser):
 
         #
         self.__counters = {
-                'cNvPr': set(),
-                'rid': set(),
-                }
+            'cNvPr': set(),
+            'rid': set(),
+            }
 
         self.files_to_keep = set(map(re.compile, {  # type: ignore
             r'^\[Content_Types\]\.xml$',
@@ -309,7 +309,8 @@ class MSOfficeParser(ZipParser):
                 self.__counters['cNvPr'].add(int(i))
 
 
-    def __randomize_creationId(self, full_path: str) -> bool:
+    @staticmethod
+    def __randomize_creationId(full_path: str) -> bool:
         try:
             tree, namespace = _parse_xml(full_path)
         except ET.ParseError as e:
@@ -324,7 +325,8 @@ class MSOfficeParser(ZipParser):
         tree.write(full_path, xml_declaration=True)
         return True
 
-    def __randomize_sldMasterId(self, full_path: str) -> bool:
+    @staticmethod
+    def __randomize_sldMasterId(full_path: str) -> bool:
         try:
             tree, namespace = _parse_xml(full_path)
         except ET.ParseError as e:
@@ -340,7 +342,7 @@ class MSOfficeParser(ZipParser):
         return True
 
     def _specific_cleanup(self, full_path: str) -> bool:
-        # pylint: disable=too-many-return-statements
+        # pylint: disable=too-many-return-statements,too-many-branches
         if os.stat(full_path).st_size == 0:  # Don't process empty files
             return True
 
