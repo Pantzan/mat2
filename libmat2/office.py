@@ -313,12 +313,12 @@ class MSOfficeParser(ZipParser):
     def __randomize_creationId(full_path: str) -> bool:
         try:
             tree, namespace = _parse_xml(full_path)
-        except ET.ParseError as e:
+        except ET.ParseError as e:  # pragma: no cover
             logging.error("Unable to parse %s: %s", full_path, e)
             return False
 
         if 'p14' not in namespace.keys():
-            return True
+            return True  # pragma: no cover
 
         for item in tree.iterfind('.//p14:creationId', namespace):
             item.set('val', '%s' % random.randint(0, 2**32))
@@ -329,12 +329,12 @@ class MSOfficeParser(ZipParser):
     def __randomize_sldMasterId(full_path: str) -> bool:
         try:
             tree, namespace = _parse_xml(full_path)
-        except ET.ParseError as e:
+        except ET.ParseError as e:  # pragma: no cover
             logging.error("Unable to parse %s: %s", full_path, e)
             return False
 
         if 'p' not in namespace.keys():
-            return True
+            return True  # pragma: no cover
 
         for item in tree.iterfind('.//p:sldMasterId', namespace):
             item.set('id', '%s' % random.randint(0, 2**32))
@@ -362,7 +362,7 @@ class MSOfficeParser(ZipParser):
         elif full_path.endswith('/word/document.xml'):
             # this file contains the revisions
             if self.__remove_revisions(full_path) is False:
-                return False
+                return False  # pragma: no cover
         elif full_path.endswith('/docProps/app.xml'):
             # This file must be present and valid,
             # so we're removing as much as we can.
@@ -386,10 +386,10 @@ class MSOfficeParser(ZipParser):
                 f.write(b'<a:tblStyleLst def="{%s}" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>' % uid)
         elif full_path.endswith('ppt/presentation.xml'):
             if self.__randomize_sldMasterId(full_path) is False:
-                return False
+                return False  # pragma: no cover
 
         if self.__remove_rsid(full_path) is False:
-            return False
+            return False  # pragma: no cover
 
         if self.__remove_nsid(full_path) is False:
             return False  # pragma: no cover
