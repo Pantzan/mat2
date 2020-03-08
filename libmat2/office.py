@@ -309,34 +309,21 @@ class MSOfficeParser(ZipParser):
 
 
     @staticmethod
-    def __randomize_creationId(full_path: str) -> bool:
+    def __randomize_field(full_path: str, keyspace: str, tag: str, field: str
+            ) -> bool:
+        """Randomize the value of `field` in `tag` in
+        the corresponding `keyspace`."""
         try:
             tree, namespace = _parse_xml(full_path)
         except ET.ParseError as e:  # pragma: no cover
             logging.error("Unable to parse %s: %s", full_path, e)
             return False
 
-        if 'p14' not in namespace.keys():
+        if keyspace not in namespace.keys():
             return True  # pragma: no cover
 
-        for item in tree.iterfind('.//p14:creationId', namespace):
-            item.set('val', '%s' % random.randint(0, 2**32))
-        tree.write(full_path, xml_declaration=True)
-        return True
-
-    @staticmethod
-    def __randomize_sldMasterId(full_path: str) -> bool:
-        try:
-            tree, namespace = _parse_xml(full_path)
-        except ET.ParseError as e:  # pragma: no cover
-            logging.error("Unable to parse %s: %s", full_path, e)
-            return False
-
-        if 'p' not in namespace.keys():
-            return True  # pragma: no cover
-
-        for item in tree.iterfind('.//p:sldMasterId', namespace):
-            item.set('id', '%s' % random.randint(0, 2**32))
+        for item in tree.iterfind('.//%s:%s' % (keyspace, field), namespace):
+            item.set(tag, '%s' % random.randint(0, 2**32))
         tree.write(full_path, xml_declaration=True)
         return True
 
@@ -348,7 +335,7 @@ class MSOfficeParser(ZipParser):
         if not full_path.endswith('.xml'):
             return True
 
-        if self.__randomize_creationId(full_path) is False:
+        if self.__randomize_field(full_path, 'p14', 'creationId', 'val') is False:
             return False
 
         self.__collect_counters(full_path)
@@ -384,7 +371,7 @@ class MSOfficeParser(ZipParser):
                 uid = str(uuid.uuid4()).encode('utf-8')
                 f.write(b'<a:tblStyleLst def="{%s}" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>' % uid)
         elif full_path.endswith('ppt/presentation.xml'):
-            if self.__randomize_sldMasterId(full_path) is False:
+            if self.__randomize_field(full_path, 'p', 'sldMasterId', 'id') is False:
                 return False  # pragma: no cover
 
         if self.__remove_rsid(full_path) is False:
