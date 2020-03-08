@@ -309,8 +309,7 @@ class MSOfficeParser(ZipParser):
 
 
     @staticmethod
-    def __randomize_field(full_path: str, keyspace: str, tag: str, field: str
-            ) -> bool:
+    def __randomize_field(full_path: str, keyspace: str, tag: str, field: str) -> bool:
         """Randomize the value of `field` in `tag` in
         the corresponding `keyspace`."""
         try:
