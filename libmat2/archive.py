@@ -231,7 +231,7 @@ class ArchiveBasedAbstractParser(abstract.AbstractParser):
             os.remove(self.output_filename)
             return False
         if not self._final_checks():
-            return False
+            return False  # pragma: no cover
         return True
 
 

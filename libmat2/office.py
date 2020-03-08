@@ -302,7 +302,7 @@ class MSOfficeParser(ZipParser):
         with open(full_path, encoding='utf-8') as f:
             content = f.read()
             # relationship id
-            for i in re.findall(r'(?:\s|r:)[iIdD]="rId([0-9]+)"(?:\s|/)', content):
+            for i in re.findall(r'(?:\s|r:)[iI][dD]="rId([0-9]+)"(?:\s|/)', content):
                 self.__counters['rid'].add(int(i))
             # Connector non visual property
             for i in re.findall(r'<p:cNvPr id="([0-9]+)"', content):
