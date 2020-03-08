@@ -1,3 +1,4 @@
+import random
 import uuid
 import logging
 import os
@@ -75,6 +76,12 @@ class MSOfficeParser(ZipParser):
     def __init__(self, filename):
         super().__init__(filename)
 
+        #
+        self.__counters = {
+                'cNvPr': set(),
+                'rid': set(),
+                }
+
         self.files_to_keep = set(map(re.compile, {  # type: ignore
             r'^\[Content_Types\]\.xml$',
             r'^_rels/\.rels$',
@@ -84,8 +91,14 @@ class MSOfficeParser(ZipParser):
             r'^ppt/slideLayouts/_rels/slideLayout[0-9]+\.xml\.rels$',
             r'^ppt/slideLayouts/slideLayout[0-9]+\.xml$',
             r'^(?:word|ppt)/tableStyles\.xml$',
+            r'^ppt/slides/_rels/slide[0-9]*\.xml\.rels$',
+            r'^ppt/slides/slide[0-9]*\.xml$',
             # https://msdn.microsoft.com/en-us/library/dd908153(v=office.12).aspx
             r'^(?:word|ppt)/stylesWithEffects\.xml$',
+            r'^ppt/presentation\.xml$',
+            # TODO: check if p:bgRef can be randomized
+            r'^ppt/slideMasters/slideMaster[0-9]+\.xml',
+            r'^ppt/slideMasters/_rels/slideMaster[0-9]+\.xml\.rels',
         }))
         self.files_to_omit = set(map(re.compile, {  # type: ignore
             r'^customXml/',
@@ -95,6 +108,7 @@ class MSOfficeParser(ZipParser):
             r'^(?:word|ppt)/theme',
             r'^(?:word|ppt)/people\.xml$',
             r'^(?:word|ppt)/numbering\.xml$',
+            r'^(?:word|ppt)/tags/',
             # View properties like view mode, last viewed slide etc
             r'^(?:word|ppt)/viewProps\.xml$',
             # Additional presentation-wide properties like printing properties,
@@ -272,6 +286,59 @@ class MSOfficeParser(ZipParser):
         tree.write(full_path, xml_declaration=True)
         return True
 
+    def _final_checks(self) -> bool:
+        for k, v in self.__counters.items():
+            if len(v) != max(v):
+                # TODO: make this an error and return False
+                # once the ability to correct the counters is implemented
+                logging.warning("%s contains invalid %s: %s", self.filename, k, v)
+                return True
+        return True
+
+    def __collect_counters(self, full_path: str):
+        """ MSOffice documents are using various counters for cross-references,
+        we collect them all, to make sure that they're effectively counters,
+        and not unique id used for fingerprinting."""
+        with open(full_path) as f:
+            content = f.read()
+            # relationship id
+            for i in re.findall(r'(?:\s|r:)[iIdD]="rId([0-9]+)"(?:\s|/)', content):
+                self.__counters['rid'].add(int(i))
+            # Connector non visual property
+            for i in re.findall(r'<p:cNvPr id="([0-9]+)"', content):
+                self.__counters['cNvPr'].add(int(i))
+
+
+    def __randomize_creationId(self, full_path: str) -> bool:
+        try:
+            tree, namespace = _parse_xml(full_path)
+        except ET.ParseError as e:
+            logging.error("Unable to parse %s: %s", full_path, e)
+            return False
+
+        if 'p14' not in namespace.keys():
+            return True
+
+        for item in tree.iterfind('.//p14:creationId', namespace):
+            item.set('val', '%s' % random.randint(0, 2**32))
+        tree.write(full_path, xml_declaration=True)
+        return True
+
+    def __randomize_sldMasterId(self, full_path: str) -> bool:
+        try:
+            tree, namespace = _parse_xml(full_path)
+        except ET.ParseError as e:
+            logging.error("Unable to parse %s: %s", full_path, e)
+            return False
+
+        if 'p' not in namespace.keys():
+            return True
+
+        for item in tree.iterfind('.//p:sldMasterId', namespace):
+            item.set('id', '%s' % random.randint(0, 2**32))
+        tree.write(full_path, xml_declaration=True)
+        return True
+
     def _specific_cleanup(self, full_path: str) -> bool:
         # pylint: disable=too-many-return-statements
         if os.stat(full_path).st_size == 0:  # Don't process empty files
@@ -279,6 +346,11 @@ class MSOfficeParser(ZipParser):
 
         if not full_path.endswith('.xml'):
             return True
+
+        if self.__randomize_creationId(full_path) is False:
+            return False
+
+        self.__collect_counters(full_path)
 
         if full_path.endswith('/[Content_Types].xml'):
             # this file contains references to files that we might
@@ -310,6 +382,9 @@ class MSOfficeParser(ZipParser):
                 f.write(b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
                 uid = str(uuid.uuid4()).encode('utf-8')
                 f.write(b'<a:tblStyleLst def="{%s}" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>' % uid)
+        elif full_path.endswith('ppt/presentation.xml'):
+            if self.__randomize_sldMasterId(full_path) is False:
+                return False
 
         if self.__remove_rsid(full_path) is False:
             return False
