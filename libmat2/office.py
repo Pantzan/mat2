@@ -288,7 +288,7 @@ class MSOfficeParser(ZipParser):
 
     def _final_checks(self) -> bool:
         for k, v in self.__counters.items():
-            if len(v) != max(v):
+            if v and len(v) != max(v):
                 # TODO: make this an error and return False
                 # once the ability to correct the counters is implemented
                 logging.warning("%s contains invalid %s: %s", self.filename, k, v)
